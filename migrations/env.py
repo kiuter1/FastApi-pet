@@ -9,8 +9,8 @@ from alembic.script import ScriptDirectory
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from src.database import *
-from src.database.base import DATABASE_URL
+from src.api.v1.database import *
+from src.api.v1.database.base import DATABASE_URL
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL)

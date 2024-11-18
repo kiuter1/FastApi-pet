@@ -28,7 +28,11 @@ async def login(request: Request, name: str, password: str,  db: AsyncSession = 
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid username or password",
     )
-    if (user := await db.get(User, name)) and utils.validate_password(password, user.password):
+    user = select(User).filter_by(name=name)
+    user = await db.execute(user)
+    user = user.scalars().first()
+
+    if user and utils.validate_password(password, (user.password)):
         jwt_payload = {
             "sub": user.id,
             "username": user.name,
