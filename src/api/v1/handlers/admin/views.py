@@ -1,8 +1,9 @@
-from . import router_admin
-from src.database import get_db, User
-
+from fastapi import APIRouter, Request, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Request, Depends
+from src.api.v1.database import get_db, User
+
+
+router_admin = APIRouter(tags=["admin"])
 
 @router_admin.get('/a')
 async def index(request: Request, db: AsyncSession = Depends(get_db)):

@@ -9,7 +9,6 @@ from alembic.script import ScriptDirectory
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-
 from src.database import *
 from src.database.base import DATABASE_URL
 
