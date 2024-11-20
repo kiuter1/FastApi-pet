@@ -7,7 +7,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
 
-
+# не перевірка на адміна поки що
 class AdminMiddleware(BaseHTTPMiddleware):
     __slots__ = ()
 
@@ -17,8 +17,6 @@ class AdminMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
-        # db = await get_db()
-        # user = User.query.filter_by(username=).first()
         start = time.perf_counter()
         response = await call_next(request)
         stop = time.perf_counter() - start
