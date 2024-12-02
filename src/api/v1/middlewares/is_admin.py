@@ -1,13 +1,15 @@
-import time
-from http.client import responses
 from typing import Awaitable, Callable
 
+from fastapi import HTTPException, Depends
+from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
+from src.api.v1.handlers.user import oauth2_scheme, get_current_auth_user
 
-# не перевірка на адміна поки що
+
+
 class AdminMiddleware(BaseHTTPMiddleware):
     __slots__ = ()
 
@@ -15,13 +17,15 @@ class AdminMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
 
     async def dispatch(
-        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]],
     ) -> Response:
-        start = time.perf_counter()
-        response = await call_next(request)
-        stop = time.perf_counter() - start
-
-        response.headers["X-Process-Time"] = f"{stop:.5f}"
-
-        return response
+        user = await get_current_auth_user(request)
+        if user.is_admin:
+            response = await call_next(request)
+            return response
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough privileges",
+            )
 

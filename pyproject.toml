@@ -15,6 +15,7 @@ asyncmy = "^0.2.9"
 alembic = "1.13.1"
 pyjwt = {extras = ["crypto"], version = "^2.10.0"}
 bcrypt = "^4.2.0"
+python-multipart = "^0.0.17"
 
 
 [build-system]

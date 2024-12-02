@@ -31,8 +31,13 @@ def decode_jwt(
         public_key: str = AuthJWT.public_key_path.read_text(),
         algorithm: str = AuthJWT.algorithm,
 ):
-    decode = jwt.decode(token, public_key, algorithms=algorithm)
+    decode = jwt.decode(
+        token,
+        public_key,
+        algorithms=[algorithm],
+    )
     return decode
+
 
 
 def hash_password(password: str) -> bytes:
