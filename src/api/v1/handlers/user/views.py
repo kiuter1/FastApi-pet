@@ -1,28 +1,29 @@
-from email.policy import default
-
 from  jwt.exceptions import InvalidTokenError
-from pycparser.ply.lex import TOKEN
-from sqlalchemy import  select
+from sqlalchemy import  select, or_
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm.collections import collection
 from starlette import status
 from starlette.responses import RedirectResponse
 
+from src.api.v1.handlers.user.shemas import TokenInfo, RegistrationForm, LoginForm
 from src.api.v1.database import get_db, User
 from src.api.v1.auth import utils
-from pydantic import BaseModel
 router_user = APIRouter(tags=["user"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
-class TokenInfo(BaseModel):
-    access_token: str
-    token_type: str
 
-@router_user.post('/regesregistration')
-async def index(request: Request, name:str, password: str, email: str, db: AsyncSession = Depends(get_db)):
-    user = User(name=name, email=email, password=utils.hash_password(password))
+@router_user.post('/registration')
+async def register(request: Request, user_form:RegistrationForm, db: AsyncSession = Depends(get_db)):
+    user = select(User).where(or_(User.name == user_form.username, User.email == user_form.email))
+    user = await db.execute(user)
+    user = user.scalars().first()
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="Username or email already taken",
+        )
+    user = User(name=user_form.username, email=user_form.email, password=utils.hash_password(user_form.password))
     db.add(user)
     await db.commit()
     await db.refresh(user)
@@ -30,16 +31,16 @@ async def index(request: Request, name:str, password: str, email: str, db: Async
 
 
 @router_user.post("/login", response_model=TokenInfo)
-async def login(request: Request, username: str = Form(), password: str = Form(),  db: AsyncSession = Depends(get_db)):
+async def login(request: Request, user_form: LoginForm,  db: AsyncSession = Depends(get_db)):
     try:
-        user = select(User).filter_by(name=username)
-        user = await db.execute(user)
-        user = user.scalars().first()
+        user_db = select(User).filter_by(name=user_form.username)
+        user_db = await db.execute(user_db)
+        user_db = user_db.scalars().first()
 
-        if user and utils.validate_password(password, (user.password)):
+        if user_db and utils.validate_password(user_form.password, (user_db.password)):
             jwt_payload = {
-                "sub": str(user.id),
-                "username": user.name,
+                "sub": str(user_db.id),
+                "username": user_db.name,
             }
             token = utils.encode_jwt(jwt_payload)
             return TokenInfo(access_token=token, token_type="Bearer")
@@ -58,8 +59,6 @@ async def login(request: Request, username: str = Form(), password: str = Form()
 async def get_current_token_payload(request: Request):
     try:
         token: str = await oauth2_scheme(request)
-        print(token)
-        print(type(token))
         payload = utils.decode_jwt(token)
     except InvalidTokenError as e:
         raise HTTPException(
@@ -83,7 +82,7 @@ async def get_current_auth_user(request: Request) -> User:
 
 
 
-@router_user.post("/me")
+@router_user.get("/me")
 async def me(request: Request, user: User = Depends(get_current_auth_user)):
     return user
 
