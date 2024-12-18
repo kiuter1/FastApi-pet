@@ -3,10 +3,17 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from miniopy_async  import Minio
 
 load_dotenv()
 
 DATABASE_URL = f"mysql+asyncmy://{os.getenv('SQL_USER')}:{os.getenv('SQL_PASSWORD')}@{os.getenv('SQL_HOST')}/{os.getenv('SQL_DATABASE')}"
+
+client = Minio(os.getenv('S3_ENDPOINT'),
+        access_key=os.getenv('S3_ACCESS'),
+        secret_key=os.getenv('S3_SECRET'),
+        secure=False  # http for False, https for True
+    )
 
 engine = create_async_engine(DATABASE_URL)
 

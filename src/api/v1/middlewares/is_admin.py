@@ -1,12 +1,12 @@
 from typing import Awaitable, Callable
 
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 from starlette.types import ASGIApp
-from src.api.v1.handlers.user import oauth2_scheme, get_current_auth_user
+from src.api.v1.handlers.user import  get_current_auth_user
 
 
 
@@ -24,8 +24,4 @@ class AdminMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             return response
         else:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not enough privileges",
-            )
-
+            return JSONResponse(status_code=403, content={'detail': 'Not enough privileges'})

@@ -4,7 +4,6 @@ from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette.responses import RedirectResponse
 
 from src.api.v1.handlers.user.shemas import TokenInfo, RegistrationForm, LoginForm
 from src.api.v1.database import get_db, User
@@ -20,7 +19,7 @@ async def register(request: Request, user_form:RegistrationForm, db: AsyncSessio
     user = user.scalars().first()
     if user:
         raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username or email already taken",
         )
     user = User(name=user_form.username, email=user_form.email, password=utils.hash_password(user_form.password))
@@ -87,6 +86,12 @@ async def me(request: Request, user: User = Depends(get_current_auth_user)):
     return user
 
 
-@router_user.get('/go_admin')
-async def go_admin(request: Request, user: User = Depends(get_current_auth_user)):
-    return RedirectResponse('/user/admin/docs', status_code=301, headers=request.headers)
+# @router_user.get('/tours')
+# async def tours(request: Request, db : AsyncSession = Depends(get_db)):
+#     try:
+#         tours =
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=str(e)
+#         )
