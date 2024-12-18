@@ -7,5 +7,8 @@ class TourForm(BaseModel):
     location: str = Field(max_length=200)
     description: str
     price: float = Field(ge=0)
-    photo: Optional[bytes] = None
+    photo: object = None
+    photo_name: str = Field(max_length=255, default=None)
+    photo_url: str = None
+
 
