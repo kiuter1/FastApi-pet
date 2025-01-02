@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import  select, or_
 from starlette import status
 
-from src.api.v1.handlers.admin.shemas import TourForm
+from src.api.v1.handlers.admin.shemas import TourForm, DelTourForm
 from src.api.v1.database import get_db, Tour, client, Photo
 import io
 
@@ -46,3 +46,12 @@ async def added_tour(request: Request, tour_form:TourForm, db: AsyncSession = De
         await db.commit()
     return {'message': 'Tour registered successfully!'}
 
+
+@router_admin.post('/deleted_tour')
+async def deleted_tour(request: Request, deleted_tour:DelTourForm, db: AsyncSession = Depends(get_db)):
+    tour = await db.get(Tour, deleted_tour.id)
+    if tour is None:
+        return {"error": "Tour not found"}
+    await db.delete(tour)
+    await db.commit()
+    return {'status': 'ok'}

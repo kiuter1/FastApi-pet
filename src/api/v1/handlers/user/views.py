@@ -1,12 +1,16 @@
+import datetime
+
+
 from  jwt.exceptions import InvalidTokenError
 from sqlalchemy import  select, or_
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 from starlette import status
 
 from src.api.v1.handlers.user.shemas import TokenInfo, RegistrationForm, LoginForm
-from src.api.v1.database import get_db, User
+from src.api.v1.database import get_db, User, Photo, Tour, client
 from src.api.v1.auth import utils
 router_user = APIRouter(tags=["user"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
@@ -86,12 +90,47 @@ async def me(request: Request, user: User = Depends(get_current_auth_user)):
     return user
 
 
-# @router_user.get('/tours')
-# async def tours(request: Request, db : AsyncSession = Depends(get_db)):
-#     try:
-#         tours =
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail=str(e)
-#         )
+@router_user.get('/tours')
+async def get_tours(request: Request, db: AsyncSession = Depends(get_db)):
+    datatime_request = int(datetime.datetime.now().timestamp())
+    try:
+        query = select(Tour).options(joinedload(Tour.photo))
+        result = await db.execute(query)
+        tours = result.unique().scalars().all()
+
+        response = []
+        for tour in tours:
+            updated_photos = []
+            if tour.photo:
+                for photo in tour.photo:
+                    if datatime_request - photo.url_updated >= 7 * 24 * 60 * 60:
+                        new_url = await client.get_presigned_url(
+                            "GET", "photo", photo.filename, datetime.timedelta(days=7)
+                        )
+                        photo.url = new_url
+                        photo.url_updated = datatime_request
+                        db.add(photo)
+
+                    updated_photos.append({
+                        "id": photo.id,
+                        "url": photo.url,
+                    })
+
+            response.append({
+                "id": tour.id,
+                "name": tour.name,
+                "location": tour.location,
+                "description": tour.description,
+                "price": tour.price,
+                "photos": updated_photos,
+            })
+
+        await db.commit()
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+    return response

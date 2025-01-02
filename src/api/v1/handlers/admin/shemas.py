@@ -12,3 +12,5 @@ class TourForm(BaseModel):
     photo_url: str = None
 
 
+class DelTourForm(BaseModel):
+    id: int = Field(ge=0)
