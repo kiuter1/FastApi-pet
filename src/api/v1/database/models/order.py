@@ -13,5 +13,6 @@ class Order(Base):
     comments = Column(String(255), nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     tour_id = Column(Integer, ForeignKey('tour.id'), nullable=False)
+    is_done = Column(Boolean, default=False)
     user = relationship("User", backref="orders")
     tour = relationship("Tour", backref="orders")

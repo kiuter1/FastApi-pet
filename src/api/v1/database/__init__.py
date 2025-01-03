@@ -8,4 +8,5 @@ __all__ = (
     "Tour",
     "Photo",
     "Order",
+    "client"
 )

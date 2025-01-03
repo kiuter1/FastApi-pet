@@ -15,3 +15,16 @@ class TourForm(BaseModel):
 
 class DelTourForm(BaseModel):
     id: int = Field(ge=0)
+
+
+class UserChangeForm(BaseModel):
+    id: int = None
+    is_admin: bool = Field(default=False)
+
+
+class OrderChangeForm(BaseModel):
+    id: int = None
+    is_done: bool = Field(default=False)
+
+class DelOrderForm(BaseModel):
+    id: int = Field(ge=0)
