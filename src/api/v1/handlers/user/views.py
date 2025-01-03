@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from starlette import status
 
-from src.api.v1.handlers.user.shemas import TokenInfo, RegistrationForm, LoginForm
-from src.api.v1.database import get_db, User, Photo, Tour, client
+from src.api.v1.handlers.user.shemas import TokenInfo, RegistrationForm, LoginForm, OrderForm
+from src.api.v1.database import get_db, User, Photo, Tour, client, Order
 from src.api.v1.auth import utils
 router_user = APIRouter(tags=["user"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
@@ -134,3 +134,11 @@ async def get_tours(request: Request, db: AsyncSession = Depends(get_db)):
             detail=str(e)
         )
     return response
+
+
+@router_user.post('/create_order')
+async def create_order(request: Request, order_form: OrderForm, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_auth_user)):
+    order = Order(fullname=order_form.fullName, contact=order_form.contact, persons=order_form.people, comments=order_form.comments,tour_id=order_form.tour_id, user_id=user.id)
+    db.add(order)
+    await db.commit()
+    return {'status': 'ok'}

@@ -1,5 +1,5 @@
 from .base import Base, get_db, init_db, client
-from .models import User, Tour, Photo
+from .models import User, Tour, Photo, Order
 __all__ = (
     "get_db",
     "init_db",
@@ -7,4 +7,5 @@ __all__ = (
     "User",
     "Tour",
     "Photo",
+    "Order",
 )

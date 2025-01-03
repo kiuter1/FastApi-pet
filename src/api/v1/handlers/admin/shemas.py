@@ -3,6 +3,7 @@ from typing import Optional
 
 
 class TourForm(BaseModel):
+    id: int = None
     name: str = Field(max_length=50)
     location: str = Field(max_length=200)
     description: str

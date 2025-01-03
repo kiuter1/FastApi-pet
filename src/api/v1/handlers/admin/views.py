@@ -55,3 +55,37 @@ async def deleted_tour(request: Request, deleted_tour:DelTourForm, db: AsyncSess
     await db.delete(tour)
     await db.commit()
     return {'status': 'ok'}
+
+
+
+@router_admin.post('/edit_tour')
+async def edit_tour(request: Request, edit_tour: TourForm, db: AsyncSession = Depends(get_db)):
+    # Проверяем существование тура по ID
+    tour = await db.get(Tour, edit_tour.id)
+    if tour is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Tour not found!",
+        )
+
+    tour.name = edit_tour.name or tour.name
+    tour.location = edit_tour.location or tour.location
+    tour.description = edit_tour.description or tour.description
+    tour.price = edit_tour.price or tour.price
+
+    if edit_tour.photo:
+        old_photos = await db.execute(select(Photo).where(Photo.tour_id == tour.id))
+        old_photos = old_photos.scalars().all()
+        for photo in old_photos:
+            await db.delete(photo)
+
+        for i in edit_tour.photo:
+            photo_name = i.get("name")
+            photo_url = i.get("response").get("photo_url")
+            photo = Photo(url=photo_url, filename=photo_name, tour_id=tour.id)
+            db.add(photo)
+
+    # Сохраняем изменения
+    await db.commit()
+
+    return {'status': 'ok', 'message': 'Tour updated successfully!'}
