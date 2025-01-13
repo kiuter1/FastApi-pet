@@ -62,7 +62,6 @@ async def deleted_tour(request: Request, deleted_tour:DelTourForm, db: AsyncSess
 
 @router_admin.post('/edit_tour')
 async def edit_tour(request: Request, tour_form: TourForm, db: AsyncSession = Depends(get_db)):
-    # Проверяем существование тура по ID
     tour = await db.get(Tour, tour_form.id)
     if tour is None:
         raise HTTPException(
