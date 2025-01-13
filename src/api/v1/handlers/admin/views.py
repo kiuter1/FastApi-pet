@@ -1,15 +1,15 @@
+import io
 from datetime import timedelta
 
 from fastapi import APIRouter, Request, Depends, HTTPException, UploadFile, File
+from sqlalchemy import select, or_
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import  select, or_
 from sqlalchemy.orm import joinedload
 from starlette import status
-from sqlalchemy.exc import SQLAlchemyError
 
-from src.api.v1.handlers.admin.shemas import TourForm, DelTourForm, UserChangeForm, OrderChangeForm, DelOrderForm
 from src.api.v1.database import get_db, Tour, client, Photo, User, Order
-import io
+from src.api.v1.handlers.admin.shemas import TourForm, DelTourForm, UserChangeForm, OrderChangeForm, DelOrderForm
 
 router_admin = APIRouter(tags=["admin"])
 

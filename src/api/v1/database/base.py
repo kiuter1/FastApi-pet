@@ -1,9 +1,9 @@
 import os
 
 from dotenv import load_dotenv
+from miniopy_async import Minio
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from miniopy_async  import Minio
 
 load_dotenv()
 

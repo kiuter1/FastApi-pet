@@ -1,13 +1,11 @@
 from typing import Awaitable, Callable
 
-from fastapi import HTTPException
-from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse
 from starlette.types import ASGIApp
-from src.api.v1.handlers.user import  get_current_auth_user
 
+from src.api.v1.handlers.user import get_current_auth_user
 
 
 class AdminMiddleware(BaseHTTPMiddleware):

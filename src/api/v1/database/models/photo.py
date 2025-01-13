@@ -2,6 +2,7 @@ import datetime
 
 from sqlalchemy import Column, String, Integer, ForeignKey, Text, BigInteger
 from sqlalchemy.orm import relationship
+
 from src.api.v1.database.base import Base
 
 

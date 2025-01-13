@@ -1,6 +1,8 @@
+from datetime import datetime, timedelta
+
 import bcrypt
 import jwt
-from datetime import datetime, timedelta
+
 from src.api.v1.core.settings import AuthJWT
 
 AuthJWT = AuthJWT()

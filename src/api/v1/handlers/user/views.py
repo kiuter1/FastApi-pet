@@ -1,17 +1,17 @@
 import datetime
 
-
-from  jwt.exceptions import InvalidTokenError
-from sqlalchemy import  select, or_
-from fastapi import APIRouter, Request, Depends, HTTPException, Form
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from jwt.exceptions import InvalidTokenError
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from starlette import status
 
-from src.api.v1.handlers.user.shemas import TokenInfo, RegistrationForm, LoginForm, OrderForm
-from src.api.v1.database import get_db, User, Photo, Tour, client, Order
 from src.api.v1.auth import utils
+from src.api.v1.database import get_db, User, Tour, client, Order
+from src.api.v1.handlers.user.shemas import TokenInfo, RegistrationForm, LoginForm, OrderForm
+
 router_user = APIRouter(tags=["user"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 

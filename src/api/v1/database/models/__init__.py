@@ -1,7 +1,7 @@
-from .user import User
-from .tour import Tour
-from .photo import Photo
 from .order import Order
+from .photo import Photo
+from .tour import Tour
+from .user import User
 
 __all__ = (
     "Tour",
