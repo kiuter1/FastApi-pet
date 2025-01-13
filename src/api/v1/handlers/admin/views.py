@@ -87,7 +87,7 @@ async def edit_tour(request: Request, tour_form: TourForm, db: AsyncSession = De
             photo = Photo(url=photo_url, filename=photo_name, tour_id=tour.id)
             db.add(photo)
 
-    # Сохраняем изменения
+
     await db.commit()
 
     return {'status': 'ok', 'message': 'Tour updated successfully!'}
