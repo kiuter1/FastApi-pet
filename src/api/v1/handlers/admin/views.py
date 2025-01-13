@@ -15,7 +15,7 @@ router_admin = APIRouter(tags=["admin"])
 
 
 @router_admin.post('/added_tour/photo')
-async def added_tour_photo(request: Request, files: UploadFile = File(...)):
+async def create_tour_photos(request: Request, files: UploadFile = File(...)):
     content = await files.read()
     await client.put_object("photo", files.filename, io.BytesIO(content), length=-1, part_size=10*1024*1024,)
     url = await client.get_presigned_url("GET","photo", files.filename, timedelta(days=7))
@@ -24,7 +24,7 @@ async def added_tour_photo(request: Request, files: UploadFile = File(...)):
 
 
 @router_admin.post('/added_tour')
-async def added_tour(request: Request, tour_form:TourForm, db: AsyncSession = Depends(get_db)):
+async def create_tour(request: Request, tour_form:TourForm, db: AsyncSession = Depends(get_db)):
     tour = select(Tour).where(or_(Tour.name == tour_form.name, Tour.location == tour_form.location))
     tour = await db.execute(tour)
     tour = tour.scalars().first()
