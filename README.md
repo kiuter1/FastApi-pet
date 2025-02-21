@@ -1,4 +1,4 @@
-# FastApi-pet
+# FastAPI-pet
 
 ## Description
 
@@ -13,7 +13,10 @@ If you want to use the frontend for this project, you can find it in this reposi
    git clone https://github.com/kiuter1/FastApi-pet.git
    cd FastApi-pet  
 2. First of all, rename .env_example to .env and fill in your data 
-3. Create and activate a virtual environment:
+3. Run docker: 
+   ```bash
+   docker-compose up --build -d 
+3. OR create and activate a virtual environment:
    ```bash
    pip install poetry
    poetry install
