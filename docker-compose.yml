@@ -1,0 +1,30 @@
+services:
+  app:
+    container_name: fastAPI_app
+    build: ./
+    depends_on:
+      - db
+    command: >
+      bash -c "while ! echo > /dev/tcp/db/3306; do sleep 1; done;
+      poetry run uvicorn src.__main__:app --host 0.0.0.0 --port 8000"
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"
+    restart: always
+    env_file:
+      - .env
+
+  db:
+    container_name: mySQL_app
+    image: mysql:8
+    environment:
+      MYSQL_USER: ${SQL_USER}
+      MYSQL_PASSWORD: ${SQL_PASSWORD}
+      MYSQL_DATABASE: ${SQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${SQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    restart: always
