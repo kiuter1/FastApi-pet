@@ -12,7 +12,7 @@ DATABASE_URL = f"mysql+asyncmy://{os.getenv('SQL_USER')}:{os.getenv('SQL_PASSWOR
 client = Minio(os.getenv('S3_ENDPOINT'),
         access_key=os.getenv('S3_ACCESS'),
         secret_key=os.getenv('S3_SECRET'),
-        secure=False  # http for False, https for True
+        secure=os.getenv('S3_SECURE')
     )
 
 engine = create_async_engine(DATABASE_URL)
