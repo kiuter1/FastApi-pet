@@ -1,9 +1,8 @@
 [tool.poetry]
-name = "three-project"
+name = "FastAPI-pet"
 version = "0.1.0"
 description = ""
 authors = ["kiuter1 <ytigraman875@gmail.com>"]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
